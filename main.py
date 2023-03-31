@@ -45,15 +45,14 @@ def get_upload_server(vk_token):
     url = f'https://api.vk.com/method/{method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    upload_url = response.json()['response']['upload_url']
-    return upload_url
+    server_url = response.json()['response']['upload_url']
+    return server_url
 
 
-def upload_image(vk_token, file_path):
-    upload_url = get_upload_server(vk_token)
+def upload_image(vk_token, file_path, server_url):
     with open(file_path, 'rb') as file:
         files = {'photo': file}
-        response = requests.post(upload_url, files=files)
+        response = requests.post(server_url, files=files)
         response.raise_for_status()
     uploaded_image_json = response.json()
     server = uploaded_image_json['server']
@@ -62,9 +61,11 @@ def upload_image(vk_token, file_path):
     return server, photo, img_hash
 
 
-def save_uploaded_image(vk_token, random_comic):
+def save_uploaded_image(vk_token, uploaded_img_features):
     method = 'photos.saveWallPhoto'
-    server, photo, img_hash = upload_image(vk_token, random_comic['file_path'])
+    server = uploaded_img_features[0]
+    photo = uploaded_img_features[1]
+    img_hash = uploaded_img_features[2]
     params = {
         'server': server,
         'photo': photo,
@@ -78,16 +79,15 @@ def save_uploaded_image(vk_token, random_comic):
     return response.json()['response'][0]
 
 
-def post_comic_vk(vk_token, group_id, random_comic):
+def post_comic_vk(vk_token, group_id, wall_image_features, message):
     method = 'wall.post'
-    upload_image_features = save_uploaded_image(vk_token, random_comic)
-    img_owner_id = upload_image_features['owner_id']
-    img_media_id = upload_image_features['id']
-    img_urls = upload_image_features['sizes']
+    img_owner_id = wall_image_features['owner_id']
+    img_media_id = wall_image_features['id']
+    img_urls = wall_image_features['sizes']
     params = {
         'owner_id': f'-{group_id}',
         'from_group': 1,
-        'message': random_comic['message'],
+        'message': message,
         'attachments': f"photo{img_owner_id}_{img_media_id},{img_urls[-1]['url']}",
         'access_token': vk_token,
         'v': 5.131
@@ -105,7 +105,10 @@ def main():
     Path('./image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
     try:
-        comic_response = post_comic_vk(vk_token, group_id, random_comic)
+        server_url = get_upload_server(vk_token)
+        uploaded_img_features = upload_image(vk_token, random_comic['file_path'], server_url)
+        wall_image_features = save_uploaded_image(vk_token, uploaded_img_features)
+        comic_response = post_comic_vk(vk_token, group_id, wall_image_features, random_comic['message'])
         if comic_response['post_id']:
             print('Comic successfully published!')
     finally:
