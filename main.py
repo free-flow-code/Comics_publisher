@@ -99,6 +99,7 @@ def post_comic_vk(vk_token, group_id, random_comic):
 
 
 def main():
+    load_dotenv()
     vk_token = os.environ['VK_ACCESS_TOKEN']
     group_id = os.environ['GROUP_ID']
     Path('./image').mkdir(exist_ok=True)
@@ -111,5 +112,4 @@ def main():
 
 
 if __name__ == '__main__':
-    load_dotenv()
     main()
