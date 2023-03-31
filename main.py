@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 
 def download_comic(image_link):
-    Path('./image').mkdir(exist_ok=True)
     response = requests.get(image_link)
     response.raise_for_status()
     file_name = os.path.split(urlparse(image_link).path)[1]
@@ -103,9 +102,11 @@ def post_comic_vk(vk_token, group_id, random_comic):
 def main():
     vk_token = os.environ['VK_ACCESS_TOKEN']
     group_id = os.environ['GROUP_ID']
+    Path('./image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
     post_comic_vk(vk_token, group_id, random_comic)
     os.remove(random_comic['save_path'])
+    os.rmdir('./image')
 
 
 if __name__ == '__main__':
