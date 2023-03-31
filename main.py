@@ -104,11 +104,13 @@ def main():
     group_id = os.environ['GROUP_ID']
     Path('./image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
-    comic_response = post_comic_vk(vk_token, group_id, random_comic)
-    if comic_response['post_id']:
-        print('Comic successfully published!')
-    os.remove(random_comic['file_path'])
-    os.rmdir('./image')
+    try:
+        comic_response = post_comic_vk(vk_token, group_id, random_comic)
+        if comic_response['post_id']:
+            print('Comic successfully published!')
+    finally:
+        os.remove(random_comic['file_path'])
+        os.rmdir('./image')
 
 
 if __name__ == '__main__':
