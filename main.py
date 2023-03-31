@@ -30,8 +30,9 @@ def get_random_comic():
     random_comic_url = f'https://xkcd.com/{random_comic_num}/info.0.json'
     response = requests.get(random_comic_url)
     response.raise_for_status()
-    comic_features['message'] = response.json()['alt']
-    comic_features['file_path'] = download_comic(response.json()['img'])
+    comic_json = response.json()
+    comic_features['message'] = comic_json['alt']
+    comic_features['file_path'] = download_comic(comic_json['img'])
     return comic_features
 
 
@@ -55,9 +56,10 @@ def upload_image(vk_token, random_comic):
         files = {'photo': file}
         response = requests.post(upload_url, files=files)
         response.raise_for_status()
-        server = response.json()['server']
-        photo = response.json()['photo']
-        hash = response.json()['hash']
+        uploaded_image_json = response.json()
+        server = uploaded_image_json['server']
+        photo = uploaded_image_json['photo']
+        hash = uploaded_image_json['hash']
         return server, photo, hash
 
 
