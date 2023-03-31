@@ -10,10 +10,10 @@ def download_comic(image_link):
     response = requests.get(image_link)
     response.raise_for_status()
     file_name = os.path.split(urlparse(image_link).path)[1]
-    save_path = 'image/{}'.format(file_name)
-    with open(save_path, 'wb') as file:
+    file_path = 'image/{}'.format(file_name)
+    with open(file_path, 'wb') as file:
         file.write(response.content)
-    return save_path
+    return file_path
 
 
 def get_last_comic_num():
@@ -31,7 +31,7 @@ def get_random_comic():
     response = requests.get(random_comic_url)
     response.raise_for_status()
     comic_features['message'] = response.json()['alt']
-    comic_features['save_path'] = download_comic(response.json()['img'])
+    comic_features['file_path'] = download_comic(response.json()['img'])
     return comic_features
 
 
@@ -50,8 +50,8 @@ def get_upload_server(vk_token):
 
 def upload_image(vk_token, random_comic):
     upload_url = get_upload_server(vk_token)
-    save_path = random_comic['save_path']
-    with open(save_path, 'rb') as file:
+    file_path = random_comic['file_path']
+    with open(file_path, 'rb') as file:
         files = {'photo': file}
         response = requests.post(upload_url, files=files)
         response.raise_for_status()
@@ -105,7 +105,7 @@ def main():
     Path('./image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
     post_comic_vk(vk_token, group_id, random_comic)
-    os.remove(random_comic['save_path'])
+    os.remove(random_comic['file_path'])
     os.rmdir('./image')
 
 
