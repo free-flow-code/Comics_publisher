@@ -55,11 +55,11 @@ def upload_image(vk_token, file_path):
         files = {'photo': file}
         response = requests.post(upload_url, files=files)
         response.raise_for_status()
-        uploaded_image_json = response.json()
-        server = uploaded_image_json['server']
-        photo = uploaded_image_json['photo']
-        hash = uploaded_image_json['hash']
-        return server, photo, hash
+    uploaded_image_json = response.json()
+    server = uploaded_image_json['server']
+    photo = uploaded_image_json['photo']
+    hash = uploaded_image_json['hash']
+    return server, photo, hash
 
 
 def save_uploaded_image(vk_token, random_comic):
