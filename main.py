@@ -95,8 +95,7 @@ def post_comic_vk(vk_token, group_id, random_comic):
     url = f'https://api.vk.com/method/{method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    if response.json()['response']['post_id']:
-        print('Comic successfully published!')
+    return response.json()['response']
 
 
 def main():
@@ -104,7 +103,9 @@ def main():
     group_id = os.environ['GROUP_ID']
     Path('./image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
-    post_comic_vk(vk_token, group_id, random_comic)
+    comic_response = post_comic_vk(vk_token, group_id, random_comic)
+    if comic_response['post_id']:
+        print('Comic successfully published!')
     os.remove(random_comic['file_path'])
     os.rmdir('./image')
 
