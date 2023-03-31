@@ -58,17 +58,17 @@ def upload_image(vk_token, file_path):
     uploaded_image_json = response.json()
     server = uploaded_image_json['server']
     photo = uploaded_image_json['photo']
-    hash = uploaded_image_json['hash']
-    return server, photo, hash
+    img_hash = uploaded_image_json['hash']
+    return server, photo, img_hash
 
 
 def save_uploaded_image(vk_token, random_comic):
     method = 'photos.saveWallPhoto'
-    server, photo, hash = upload_image(vk_token, random_comic['file_path'])
+    server, photo, img_hash = upload_image(vk_token, random_comic['file_path'])
     params = {
         'server': server,
         'photo': photo,
-        'hash': hash,
+        'hash': img_hash,
         'access_token': vk_token,
         'v': 5.131
     }
