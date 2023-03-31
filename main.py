@@ -96,7 +96,7 @@ def post_comic_vk(vk_token, group_id, random_comic):
     url = f'https://api.vk.com/method/{method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    if response.json()['post_id']:
+    if response.json()['response']['post_id']:
         print('Comic successfully published!')
 
 
