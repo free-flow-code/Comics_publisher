@@ -81,7 +81,6 @@ def save_uploaded_image(vk_token, random_comic):
 def post_comic_vk(vk_token, group_id, random_comic):
     method = 'wall.post'
     upload_image_features = save_uploaded_image(vk_token, random_comic)
-    print(upload_image_features)
     img_owner_id = upload_image_features['owner_id']
     img_media_id = upload_image_features['id']
     img_urls = upload_image_features['sizes']
