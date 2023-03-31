@@ -49,9 +49,8 @@ def get_upload_server(vk_token):
     return upload_url
 
 
-def upload_image(vk_token, random_comic):
+def upload_image(vk_token, file_path):
     upload_url = get_upload_server(vk_token)
-    file_path = random_comic['file_path']
     with open(file_path, 'rb') as file:
         files = {'photo': file}
         response = requests.post(upload_url, files=files)
@@ -65,7 +64,7 @@ def upload_image(vk_token, random_comic):
 
 def save_uploaded_image(vk_token, random_comic):
     method = 'photos.saveWallPhoto'
-    server, photo, hash = upload_image(vk_token, random_comic)
+    server, photo, hash = upload_image(vk_token, random_comic['file_path'])
     params = {
         'server': server,
         'photo': photo,
