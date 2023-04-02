@@ -54,10 +54,10 @@ def upload_image(vk_token, file_path, server_url):
         files = {'photo': file}
         response = requests.post(server_url, files=files)
     response.raise_for_status()
-    uploaded_image_json = response.json()
-    server = uploaded_image_json['server']
-    photo = uploaded_image_json['photo']
-    img_hash = uploaded_image_json['hash']
+    uploaded_img_details = response.json()
+    server = uploaded_img_details['server']
+    photo = uploaded_img_details['photo']
+    img_hash = uploaded_img_details['hash']
     return server, photo, img_hash
 
 
