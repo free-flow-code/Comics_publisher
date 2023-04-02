@@ -10,7 +10,7 @@ def download_comic(image_link):
     response = requests.get(image_link)
     response.raise_for_status()
     file_name = os.path.split(urlparse(image_link).path)[1]
-    file_path = 'image/{}'.format(file_name)
+    file_path = os.path.join('image', file_name)
     with open(file_path, 'wb') as file:
         file.write(response.content)
     return file_path
@@ -102,7 +102,7 @@ def main():
     load_dotenv()
     vk_token = os.environ['VK_ACCESS_TOKEN']
     group_id = os.environ['GROUP_ID']
-    Path('./image').mkdir(exist_ok=True)
+    Path('image').mkdir(exist_ok=True)
     random_comic = get_random_comic()
     try:
         server_url = get_upload_server(vk_token)
@@ -113,7 +113,7 @@ def main():
             print('Comic successfully published!')
     finally:
         os.remove(random_comic['file_path'])
-        os.rmdir('./image')
+        os.rmdir('image')
 
 
 if __name__ == '__main__':
