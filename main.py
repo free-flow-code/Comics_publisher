@@ -32,9 +32,9 @@ def get_random_comic():
     response = requests.get(random_comic_url)
     response.raise_for_status()
     comic_json = response.json()
-    comic_features['message'] = comic_json['alt']
-    comic_features['file_path'] = download_comic(comic_json['img'])
-    return comic_features
+    message = comic_json['alt']
+    file_path = download_comic(comic_json['img'])
+    return message, file_path
 
 
 def get_upload_server(vk_token):
@@ -102,12 +102,12 @@ def main():
     vk_token = os.environ['VK_ACCESS_TOKEN']
     group_id = os.environ['GROUP_ID']
     Path('image').mkdir(exist_ok=True)
-    random_comic = get_random_comic()
+    message, file_path = get_random_comic()
     try:
         server_url = get_upload_server(vk_token)
-        server, photo, img_hash = upload_image(vk_token, random_comic['file_path'], server_url)
+        server, photo, img_hash = upload_image(vk_token, file_path, server_url)
         owner_id, media_id, img_urls = save_uploaded_image(vk_token, server, photo, img_hash)
-        comic_response = post_comic_vk(vk_token, group_id, owner_id, media_id, img_urls, random_comic['message'])
+        comic_response = post_comic_vk(vk_token, group_id, owner_id, media_id, img_urls, message)
         if comic_response['post_id']:
             print('Comic successfully published!')
     finally:
