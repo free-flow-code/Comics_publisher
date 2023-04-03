@@ -1,4 +1,5 @@
 import os
+import shutil
 import requests
 from pathlib import Path
 from urllib.parse import urlparse
@@ -110,8 +111,7 @@ def main():
         if comic_response['post_id']:
             print('Comic successfully published!')
     finally:
-        os.remove(random_comic['file_path'])
-        os.rmdir('image')
+        shutil.rmtree('image', ignore_errors=True)
 
 
 if __name__ == '__main__':
