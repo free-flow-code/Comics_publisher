@@ -77,17 +77,17 @@ def save_uploaded_image(vk_token, server, photo, img_hash):
     wall_image_features = response.json()['response'][0]
     owner_id = wall_image_features['owner_id']
     media_id = wall_image_features['id']
-    img_urls = wall_image_features['sizes']
-    return owner_id, media_id, img_urls
+    img_url = wall_image_features['sizes'][-1]['url']
+    return owner_id, media_id, img_url
 
 
-def post_comic_vk(vk_token, group_id, owner_id, media_id, img_urls, message):
+def post_comic_vk(vk_token, group_id, owner_id, media_id, img_url, message):
     method = 'wall.post'
     params = {
         'owner_id': f'-{group_id}',
         'from_group': 1,
         'message': message,
-        'attachments': f"photo{owner_id}_{media_id},{img_urls[-1]['url']}",
+        'attachments': f"photo{owner_id}_{media_id},{img_url}",
         'access_token': vk_token,
         'v': 5.131
     }
@@ -106,8 +106,8 @@ def main():
     try:
         server_url = get_upload_server(vk_token)
         server, photo, img_hash = upload_image(vk_token, file_path, server_url)
-        owner_id, media_id, img_urls = save_uploaded_image(vk_token, server, photo, img_hash)
-        comic_response = post_comic_vk(vk_token, group_id, owner_id, media_id, img_urls, message)
+        owner_id, media_id, img_url = save_uploaded_image(vk_token, server, photo, img_hash)
+        comic_response = post_comic_vk(vk_token, group_id, owner_id, media_id, img_url, message)
         if comic_response['post_id']:
             print('Comic successfully published!')
     finally:
