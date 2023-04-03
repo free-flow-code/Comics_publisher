@@ -25,7 +25,6 @@ def get_last_comic_num():
 
 
 def get_random_comic():
-    comic_features = {}
     current_comic_num = get_last_comic_num()
     random_comic_num = random.randint(1, current_comic_num)
     random_comic_url = f'https://xkcd.com/{random_comic_num}/info.0.json'
@@ -50,7 +49,7 @@ def get_upload_server(vk_token):
     return server_url
 
 
-def upload_image(vk_token, file_path, server_url):
+def upload_image(file_path, server_url):
     with open(file_path, 'rb') as file:
         files = {'photo': file}
         response = requests.post(server_url, files=files)
@@ -105,7 +104,7 @@ def main():
     message, file_path = get_random_comic()
     try:
         server_url = get_upload_server(vk_token)
-        server, photo, img_hash = upload_image(vk_token, file_path, server_url)
+        server, photo, img_hash = upload_image(file_path, server_url)
         owner_id, media_id, img_url = save_uploaded_image(vk_token, server, photo, img_hash)
         comic_response = post_comic_vk(vk_token, group_id, owner_id, media_id, img_url, message)
         if comic_response['post_id']:
