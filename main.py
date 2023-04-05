@@ -30,15 +30,15 @@ def get_random_comic():
     random_comic_url = f'https://xkcd.com/{random_comic_num}/info.0.json'
     response = requests.get(random_comic_url)
     response.raise_for_status()
-    response_dict = response.json()
-    message = response_dict['alt']
-    file_path = download_comic(response_dict['img'])
+    features_response = response.json()
+    message = features_response['alt']
+    file_path = download_comic(features_response['img'])
     return message, file_path
 
 
-def check_response_status(response_dict):
-    if 'error' in response_dict:
-        raise requests.HTTPError(response_dict['error']['error_code'], response_dict['error']['error_msg'])
+def check_response_status(features_response):
+    if 'error' in features_response:
+        raise requests.HTTPError(features_response['error']['error_code'], features_response['error']['error_msg'])
 
 
 def get_upload_server(vk_token):
@@ -50,9 +50,9 @@ def get_upload_server(vk_token):
     url = f'https://api.vk.com/method/{method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    response_dict = response.json()
-    check_response_status(response_dict)
-    server_url = response_dict['response']['upload_url']
+    features_response = response.json()
+    check_response_status(features_response)
+    server_url = features_response['response']['upload_url']
     return server_url
 
 
@@ -61,11 +61,11 @@ def upload_image(file_path, server_url):
         files = {'photo': file}
         response = requests.post(server_url, files=files)
     response.raise_for_status()
-    response_dict = response.json()
-    check_response_status(response_dict)
-    server = response_dict['server']
-    photo = response_dict['photo']
-    img_hash = response_dict['hash']
+    features_response = response.json()
+    check_response_status(features_response)
+    server = features_response['server']
+    photo = features_response['photo']
+    img_hash = features_response['hash']
     return server, photo, img_hash
 
 
@@ -81,11 +81,11 @@ def save_uploaded_image(vk_token, server, photo, img_hash):
     url = f'https://api.vk.com/method/{method}'
     response = requests.post(url, params=params)
     response.raise_for_status()
-    response_dict = response.json()
-    check_response_status(response_dict)
-    owner_id = response_dict['response'][0]['owner_id']
-    media_id = response_dict['response'][0]['id']
-    img_url = response_dict['response'][0]['sizes'][-1]['url']
+    features_response = response.json()
+    check_response_status(features_response)
+    owner_id = features_response['response'][0]['owner_id']
+    media_id = features_response['response'][0]['id']
+    img_url = features_response['response'][0]['sizes'][-1]['url']
     return owner_id, media_id, img_url
 
 
@@ -102,9 +102,9 @@ def post_comic_vk(vk_token, group_id, owner_id, media_id, img_url, message):
     url = f'https://api.vk.com/method/{method}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    response_dict = response.json()
-    check_response_status(response_dict)
-    return response_dict['response']
+    features_response = response.json()
+    check_response_status(features_response)
+    return features_response['response']
 
 
 def main():
